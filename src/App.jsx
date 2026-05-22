@@ -1,4 +1,8 @@
 import './App.css'
+import sharkImg  from './assets/shark.png'
+import dudeImg   from './assets/dude.png'
+import havenImg  from './assets/haven.png'
+import phophoImg from './assets/phopho.png'
 
 function App() {
   return (
@@ -12,11 +16,10 @@ function App() {
       </nav>
 
       <main className="main-canvas">
-        {/* Project thumbnails — replace divs with <img> once assets are added */}
-        <div className="thumb thumb--shark" />
-        <div className="thumb thumb--dude" />
-        <div className="thumb thumb--haven" />
-        <div className="thumb thumb--phopho" />
+        <img className="thumb thumb--shark"  src={sharkImg}  alt="Shark project" />
+        <img className="thumb thumb--dude"   src={dudeImg}   alt="Dude project" />
+        <img className="thumb thumb--haven"  src={havenImg}  alt="Haven project" />
+        <img className="thumb thumb--phopho" src={phophoImg} alt="Phopho project" />
       </main>
     </div>
   )
