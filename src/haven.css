@@ -1,0 +1,71 @@
+/* Haven page — Figma: 1440×5677px, gradient background */
+.haven {
+  min-height: 100vh;
+  background: var(--color-bg-gradient);
+  font-family: var(--font-mono);
+  color: var(--color-text);
+}
+
+/* Figma Title frame: y:63, "Haven" 65px centered */
+.haven__header {
+  padding-top: calc(var(--nav-height) + 10px);
+  text-align: center;
+  padding-bottom: 12px;
+}
+
+.haven__title {
+  font-size: 65px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* Figma Secondary Title: y:128, "Motion to Product Demo" 30px centered */
+.haven__subtitle {
+  font-size: 30px;
+  font-weight: 400;
+  margin-top: 12px;
+}
+
+/* Figma Frame 3: 5 stacked full-width images, each 1440×1028 */
+.haven__screens {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.haven__screen {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Figma Frame 4: text info, left-padded ~15px, max-width matches Figma */
+.haven__info {
+  padding: 32px 15px 64px;
+  max-width: var(--canvas-width);
+  margin: 0 auto;
+}
+
+.haven__meta {
+  display: flex;
+  gap: 24px;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+}
+
+/* Figma: description width 869px */
+.haven__desc {
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 869px;
+  color: var(--color-text);
+  margin-bottom: 12px;
+}
+
+/* Figma: course note width 666px */
+.haven__course {
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 666px;
+  color: var(--color-text-secondary);
+}
