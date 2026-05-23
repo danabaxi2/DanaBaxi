@@ -20,7 +20,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: "Terminal Grotesque";
   src: url('/fonts/terminal-grotesque.ttf') format('truetype');
@@ -45,6 +44,7 @@
   --color-text-secondary: #525252;
   --color-label:          #C4FF3B;
   --color-bg:             #ffffff;
+  --color-canvas-bg:      #E4E3DE;
   --color-bg-gradient:    linear-gradient(180deg,
     #ffffff  0%,
     #fafafa  91.85%,
@@ -85,11 +85,9 @@ a {
   left: 0;
   right: 0;
   z-index: 100;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   height: var(--nav-height);
   padding: 15px 11px 0;
   background: transparent;
@@ -113,40 +111,42 @@ a {
   font-weight: 400;
 }
 
-/* ─── Portfolio / Scene system ───────────────────────────────────────── */
-/* 300vh gives scroll room: Scene 1 parallax (0→50%), Scene 2 (50→100%) */
-.portfolio {
-  min-height: 300vh;
-}
-
-/* Single sticky viewport that holds both scene layers */
+/* ─── Scene system ───────────────────────────────────────────────────── */
+/* .scene-wrapper is sticky — Scene 1 canvas stays in view during
+   scroll travel; .scroll-room gives scroll distance for parallax.
+   Scene 2 appears naturally after the scroll room ends.            */
 .scene-wrapper {
   position: sticky;
   top: 0;
-  height: 100vh;
   overflow: hidden;
+  /* height determined by .main-canvas aspect-ratio */
+}
+
+.scroll-room {
+  height: 100vh;
 }
 
 /* ─── Scene 1: Main canvas ───────────────────────────────────────────── */
+/* Figma: 1440×866px, bg #E4E3DE */
 .main-canvas {
-  position: absolute;
-  inset: 0;
-  background: var(--color-bg);
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1440 / 866;
+  background: var(--color-canvas-bg);
   overflow: hidden;
 }
 
 /* ─── Scene 2: About ─────────────────────────────────────────────────── */
 .about-scene {
-  position: absolute;
-  inset: 0;
+  min-height: 100vh;
   background: var(--color-bg-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
 }
 
 /* ─── Background layers ──────────────────────────────────────────────── */
+/* Vector 2: gradient #D993FB→#F96214, blur r=100 (stdDeviation=50 in SVG) */
 .bg-vector {
   position: absolute;
   left:   -13.82%;
@@ -158,6 +158,7 @@ a {
   z-index: 0;
 }
 
+/* Ellipse 1: radial #FCE705→#F73B18→#D7BEE6, blur r=100 */
 .bg-ellipse {
   position: absolute;
   left:   -18.96%;
@@ -172,75 +173,89 @@ a {
   z-index: 0;
 }
 
-/* ─── Project thumbnails ─────────────────────────────────────────────── */
-.thumb {
+/* ─── Project thumbnail slots ────────────────────────────────────────── */
+/* Each slot is an absolutely positioned container (Figma 25:67 coords).
+   The slot itself clips to its bounds; only the .thumb-label overflows. */
+.thumb-slot {
   position: absolute;
-  object-fit: cover;
   cursor: pointer;
   z-index: 1;
+  overflow: visible;
 }
 
-/* Weird Fishes banner: rel(168,190) 405×244 */
-.thumb--weird-fishes {
-  left:   11.67%;
-  top:    21.94%;
-  width:  28.13%;
-  height: 28.17%;
-}
-
-/* No Strings Attached (dude): rel(952,155) 206×313 */
-.thumb--no-strings {
-  left:   66.11%;
-  top:    17.90%;
-  width:  14.31%;
-  height: 36.14%;
-}
-
-/* Pho Pho (bottle): rel(44,647) 192×322 */
-.thumb--phopho {
-  left:    3.06%;
-  top:    74.71%;
-  width:  13.33%;
-  height: 37.18%;
-}
-
-/* Watchout (NPC): rel(603,392) 234×322 */
-.thumb--watchout {
-  left:   41.88%;
-  top:    45.27%;
-  width:  16.25%;
-  height: 37.18%;
+.thumb-slot--watchout {
   cursor: default;
 }
 
-/* Haven banner: rel(881,703) 450×321 */
-.thumb--haven {
-  left:   61.18%;
-  top:    81.17%;
-  width:  31.25%;
-  height: 37.07%;
+/* Figma 25:67 — exact % positions on 1440×866 canvas */
+/* Weird_fishes_banner: rx=100 ry=170 w=330 h=198 */
+.thumb-slot--weird-fishes {
+  left:   6.94%;
+  top:    19.63%;
+  width:  22.92%;
+  height: 22.86%;
 }
 
-/* ─── Project labels ─────────────────────────────────────────────────── */
-/* Figma frame drop-shadow: y=4 radius=4 rgba(0,0,0,0.25) */
-.project-label {
+/* dude1_cut 3: rx=1118 ry=170 w=123 h=186 */
+.thumb-slot--no-strings {
+  left:   77.64%;
+  top:    19.63%;
+  width:   8.54%;
+  height: 21.48%;
+}
+
+/* phopho_bottle0000 2: rx=-62 ry=676 w=162 h=271 */
+.thumb-slot--phopho {
+  left:   -4.31%;
+  top:    78.06%;
+  width:  11.25%;
+  height: 31.29%;
+}
+
+/* Untitled / Watchout GIF: rx=598 ry=433 w=146 h=243 */
+.thumb-slot--watchout {
+  left:   41.53%;
+  top:    50.00%;
+  width:  10.14%;
+  height: 28.06%;
+}
+
+/* Haven_banner: rx=957 ry=782 w=402 h=287 */
+.thumb-slot--haven {
+  left:   66.46%;
+  top:    90.30%;
+  width:  27.92%;
+  height: 33.14%;
+}
+
+/* The actual media element fills the slot */
+.thumb-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ─── Hover labels ───────────────────────────────────────────────────── */
+/* Figma hover state: Terminal Grotesque 32px #C4FF3B, drop-shadow 0px 4px 4px */
+.thumb-label {
   position: absolute;
   font-family: var(--font-terminal);
+  font-size: clamp(16px, 2.22vw, 32px);
   font-weight: 400;
   color: var(--color-label);
-  line-height: 1;
-  z-index: 2;
-  pointer-events: none;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 3;
 }
 
-/* "Weird Fishes": rel(100,161) 48px */
-.label--weird-fishes { left: 6.94%;  top: 18.59%; font-size: clamp(20px, 3.33vw, 48px); }
-/* "No Strings Attached": rel(1077,122) 48px */
-.label--no-strings   { left: 74.79%; top: 14.09%; font-size: clamp(16px, 3.33vw, 48px); }
-/* "Watchout": rel(546,647) 40px */
-.label--watchout     { left: 37.92%; top: 74.71%; font-size: clamp(16px, 2.78vw, 40px); }
-/* "Haven": rel(1238,667) 55px */
-.label--haven        { left: 85.97%; top: 77.02%; font-size: clamp(20px, 3.82vw, 55px); }
-/* "Pho Pho": rel(168,690) 36px */
-.label--phopho       { left: 11.67%; top: 79.68%; font-size: clamp(14px, 2.5vw,  36px); }
+/* Label positions: relative to thumbnail slot (from Figma component analysis)
+   rel_x / slot_w * 100%  |  rel_y / slot_h * 100%
+   All labels sit at the bottom of their slot, some offset left/right      */
+.thumb-slot--weird-fishes .thumb-label { left: -12.42%; top: 89.90%; }
+.thumb-slot--no-strings   .thumb-label { left: -16.26%; top: 87.10%; }
+.thumb-slot--watchout     .thumb-label { left: -28.77%; top: 74.07%; }
+.thumb-slot--haven        .thumb-label { left:  85.32%; top: 94.77%; }
+.thumb-slot--phopho       .thumb-label { left:  48.15%; top: 89.30%; }

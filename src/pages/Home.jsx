@@ -1,62 +1,89 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+} from 'framer-motion'
 import { media } from '../data/mediaData.js'
 import '../App.css'
-import bgVector from '../assets/bg_vector.svg'
-import dudeImg  from '../assets/dude.png'
-import phophoImg from '../assets/phopho.png'
-import npcImg   from '../assets/npc_thumb.png'
+import bgVector         from '../assets/bg_vector.svg'
+import dudeImg          from '../assets/dude.png'
+import phophoBottleImg  from '../assets/phopho_bottle_banner.png'
+import watchoutGifImg   from '../assets/watchout_banner.png'
 
-const videoProps = {
-  autoPlay: true,
-  loop: true,
-  muted: true,
-  playsInline: true,
-  controls: false,
+const videoProps = { autoPlay: true, loop: true, muted: true, playsInline: true, controls: false }
+
+// Hover label transition — matches Figma's DISSOLVE 0.08s ease-out
+const labelVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.08, ease: 'easeOut' } },
+  exit:   { opacity: 0, transition: { duration: 0.08, ease: 'easeIn' } },
+}
+
+// Per-depth layer: [mouseX_range, mouseY_range, scrollY_max]
+// Deeper layers (bg) move less; foreground layers move more
+const LAYERS = {
+  bg:        { mx: 5,  my: 3,  sy: -20  },
+  far:       { mx: 10, my: 6,  sy: -40  },
+  midFar:    { mx: 20, my: 12, sy: -70  },
+  mid:       { mx: 28, my: 16, sy: -100 },
+  near:      { mx: 38, my: 22, sy: -140 },
+  foreground:{ mx: 50, my: 28, sy: -180 },
+}
+
+function useLayerMotion(layer, mouseXSpring, mouseYSpring, scrollY) {
+  const { mx, my, sy } = LAYERS[layer]
+  const x        = useTransform(mouseXSpring, [-1, 1], [-mx, mx])
+  const yMouse   = useTransform(mouseYSpring, [-1, 1], [-my, my])
+  const yScroll  = useTransform(scrollY,      [0, 600], [0, sy])
+  // Combine mouse Y + scroll Y
+  const y = useTransform([yMouse, yScroll], ([m, s]) => m + s)
+  return { x, y }
 }
 
 export default function Home() {
   const navigate = useNavigate()
+  const [hoveredId, setHoveredId] = useState(null)
 
-  // scrollYProgress: 0 at page top → 1 at page bottom
-  // With min-height: 300vh, progress 0→0.5 covers Scene 1, 0.5→1 covers Scene 2
-  const { scrollYProgress } = useScroll()
+  // ── Mouse tracking ────────────────────────────────────────────────────
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+  const springCfg = { damping: 30, stiffness: 60, mass: 0.8 }
+  const mouseXSpring = useSpring(rawX, springCfg)
+  const mouseYSpring = useSpring(rawY, springCfg)
 
-  // ── Depth layers (back → front) ───────────────────────────────────────
-  // Z-index visualized: bg (deepest) … labels (shallowest/closest to camera)
+  const handleMouseMove = (e) => {
+    rawX.set((e.clientX / window.innerWidth  - 0.5) * 2)
+    rawY.set((e.clientY / window.innerHeight - 0.5) * 2)
+  }
 
-  // Layer 0 — background decorations (deepest, barely move)
-  const bgVectorY  = useTransform(scrollYProgress, [0, 0.5], [0, -20])
-  const bgEllipseY = useTransform(scrollYProgress, [0, 0.5], [0, -10])
+  // ── Scroll tracking ───────────────────────────────────────────────────
+  const { scrollY } = useScroll()
 
-  // Layer 1 — Haven banner: bottom-right corner, far from camera
-  const havenY     = useTransform(scrollYProgress, [0, 0.5], [0, -80])
-  const havenLabel = useTransform(scrollYProgress, [0, 0.5], [0, -95])
+  // ── Per-layer parallax ────────────────────────────────────────────────
+  const bgLayer         = useLayerMotion('bg',         mouseXSpring, mouseYSpring, scrollY)
+  const ellipseLayer    = useLayerMotion('bg',         mouseXSpring, mouseYSpring, scrollY)
+  const havenLayer      = useLayerMotion('far',        mouseXSpring, mouseYSpring, scrollY)
+  const phophoLayer     = useLayerMotion('midFar',     mouseXSpring, mouseYSpring, scrollY)
+  const watchoutLayer   = useLayerMotion('mid',        mouseXSpring, mouseYSpring, scrollY)
+  const weirdLayer      = useLayerMotion('near',       mouseXSpring, mouseYSpring, scrollY)
+  const noStringsLayer  = useLayerMotion('foreground', mouseXSpring, mouseYSpring, scrollY)
 
-  // Layer 2 — PHo PHo bottle: left edge, mid-far
-  const phophoY     = useTransform(scrollYProgress, [0, 0.5], [0, -120])
-  const phophoLabel = useTransform(scrollYProgress, [0, 0.5], [0, -138])
+  const weirdScale     = useTransform(scrollY, [0, 600], [1, 1.06])
+  const noStringsScale = useTransform(scrollY, [0, 600], [1, 1.09])
 
-  // Layer 3 — Watchout NPC: center, mid distance
-  const watchoutY     = useTransform(scrollYProgress, [0, 0.5], [0, -160])
-  const watchoutLabel = useTransform(scrollYProgress, [0, 0.5], [0, -178])
-
-  // Layer 4 — Weird Fishes banner: upper-left, near
-  const weirdY     = useTransform(scrollYProgress, [0, 0.5], [0, -220])
-  const weirdScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.06])
-  const weirdLabel = useTransform(scrollYProgress, [0, 0.5], [0, -242])
-
-  // Layer 5 — No Strings dude: upper-right, foreground (closest)
-  const noStringsY     = useTransform(scrollYProgress, [0, 0.5], [0, -280])
-  const noStringsScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.09])
-  const noStringsLabel = useTransform(scrollYProgress, [0, 0.5], [0, -305])
-
-  // ── Scene transitions ─────────────────────────────────────────────────
-  const scene1Opacity = useTransform(scrollYProgress, [0.38, 0.52], [1, 0])
-  const scene2Opacity = useTransform(scrollYProgress, [0.44, 0.58], [0, 1])
+  // ── Hover helpers ─────────────────────────────────────────────────────
+  const hoverProps = (id) => ({
+    onMouseEnter: () => setHoveredId(id),
+    onMouseLeave: () => setHoveredId(null),
+  })
 
   return (
-    <div className="portfolio">
+    <div className="portfolio" onMouseMove={handleMouseMove}>
       <nav className="navbar">
         <span className="navbar__logo">Dana Baxi</span>
         <div className="navbar__links">
@@ -65,95 +92,118 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Sticky viewport — both scenes live here */}
+      {/* ── Scene 1: sticky spatial canvas ─────────────────────────── */}
       <div className="scene-wrapper">
+        <main className="main-canvas">
 
-        {/* ── Scene 1: Parallax canvas ─────────────────────────────── */}
-        <motion.main className="main-canvas" style={{ opacity: scene1Opacity }}>
-
-          {/* Background — deepest layer */}
+          {/* Background — deepest Z */}
           <motion.img
             src={bgVector}
             className="bg-vector"
             alt=""
             aria-hidden="true"
-            style={{ y: bgVectorY }}
+            style={bgLayer}
           />
           <motion.div
             className="bg-ellipse"
             aria-hidden="true"
-            style={{ y: bgEllipseY }}
+            style={ellipseLayer}
           />
 
-          {/* Haven banner — far, bottom-right */}
-          <motion.video
-            className="thumb thumb--haven"
-            {...videoProps}
-            src={media.banners.Haven_banner}
-            style={{ y: havenY }}
+          {/* Haven banner — far, bottom-right (mostly below fold) */}
+          <motion.div
+            className="thumb-slot thumb-slot--haven"
+            style={havenLayer}
             onClick={() => navigate('/projects/haven')}
-          />
-          <motion.span className="project-label label--haven" style={{ y: havenLabel }}>
-            Haven
-          </motion.span>
+            {...hoverProps('haven')}
+          >
+            <video className="thumb-media" {...videoProps} src={media.banners.Haven_banner} />
+            <AnimatePresence>
+              {hoveredId === 'haven' && (
+                <motion.span className="thumb-label" variants={labelVariants} initial="hidden" animate="visible" exit="exit">
+                  Haven
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
-          {/* PHo PHo bottle — mid-far, left edge */}
-          <motion.img
-            className="thumb thumb--phopho"
-            src={phophoImg}
-            alt="Pho Pho"
-            style={{ y: phophoY }}
+          {/* PHo PHo bottle — mid-far, left edge (partially off-canvas) */}
+          <motion.div
+            className="thumb-slot thumb-slot--phopho"
+            style={phophoLayer}
             onClick={() => navigate('/projects/phopho')}
-          />
-          <motion.span className="project-label label--phopho" style={{ y: phophoLabel }}>
-            Pho Pho
-          </motion.span>
+            {...hoverProps('phopho')}
+          >
+            <img className="thumb-media" src={phophoBottleImg} alt="Pho Pho" />
+            <AnimatePresence>
+              {hoveredId === 'phopho' && (
+                <motion.span className="thumb-label" variants={labelVariants} initial="hidden" animate="visible" exit="exit">
+                  Pho Pho
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
-          {/* Watchout NPC — mid distance, center */}
-          <motion.img
-            className="thumb thumb--watchout"
-            src={npcImg}
-            alt="Watchout"
-            style={{ y: watchoutY }}
-          />
-          <motion.span className="project-label label--watchout" style={{ y: watchoutLabel }}>
-            Watchout
-          </motion.span>
+          {/* Watchout GIF — mid, center */}
+          <motion.div
+            className="thumb-slot thumb-slot--watchout"
+            style={watchoutLayer}
+            {...hoverProps('watchout')}
+          >
+            <img className="thumb-media" src={watchoutGifImg} alt="Watchout" />
+            <AnimatePresence>
+              {hoveredId === 'watchout' && (
+                <motion.span className="thumb-label" variants={labelVariants} initial="hidden" animate="visible" exit="exit">
+                  Watchout
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
           {/* Weird Fishes banner — near, upper-left */}
-          <motion.video
-            className="thumb thumb--weird-fishes"
-            {...videoProps}
-            src={media.banners.Weird_fishes_banner}
-            style={{ y: weirdY, scale: weirdScale }}
+          <motion.div
+            className="thumb-slot thumb-slot--weird-fishes"
+            style={{ ...weirdLayer, scale: weirdScale }}
             onClick={() => navigate('/projects/weird-fishes')}
-          />
-          <motion.span className="project-label label--weird-fishes" style={{ y: weirdLabel }}>
-            Weird Fishes
-          </motion.span>
+            {...hoverProps('weird-fishes')}
+          >
+            <video className="thumb-media" {...videoProps} src={media.banners.Weird_fishes_banner} />
+            <AnimatePresence>
+              {hoveredId === 'weird-fishes' && (
+                <motion.span className="thumb-label" variants={labelVariants} initial="hidden" animate="visible" exit="exit">
+                  Weird Fishes
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
           {/* No Strings Attached — foreground, upper-right */}
-          <motion.img
-            className="thumb thumb--no-strings"
-            src={dudeImg}
-            alt="No Strings Attached"
-            style={{ y: noStringsY, scale: noStringsScale }}
+          <motion.div
+            className="thumb-slot thumb-slot--no-strings"
+            style={{ ...noStringsLayer, scale: noStringsScale }}
             onClick={() => navigate('/projects/no-strings')}
-          />
-          <motion.span className="project-label label--no-strings" style={{ y: noStringsLabel }}>
-            No Strings Attached
-          </motion.span>
-        </motion.main>
+            {...hoverProps('no-strings')}
+          >
+            <img className="thumb-media" src={dudeImg} alt="No Strings Attached" />
+            <AnimatePresence>
+              {hoveredId === 'no-strings' && (
+                <motion.span className="thumb-label" variants={labelVariants} initial="hidden" animate="visible" exit="exit">
+                  No Strings Attached
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
-        {/* ── Scene 2: About (placeholder) ─────────────────────────── */}
-        <motion.section
-          className="about-scene"
-          id="about"
-          style={{ opacity: scene2Opacity }}
-        >
-          {/* 3D About Character — coming soon */}
-        </motion.section>
+        </main>
       </div>
+
+      {/* Scroll room — gives parallax elements travel distance */}
+      <div className="scroll-room" />
+
+      {/* ── Scene 2: About ───────────────────────────────────────── */}
+      <section className="about-scene" id="about">
+        {/* 3D About Character — coming soon */}
+      </section>
     </div>
   )
 }
