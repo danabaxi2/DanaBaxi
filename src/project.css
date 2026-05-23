@@ -59,7 +59,8 @@
 
 .project__meta {
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  gap: 10px;
   font-size: 16px;
   color: var(--color-text-secondary);
   margin-bottom: 12px;

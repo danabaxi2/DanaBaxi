@@ -30,6 +30,8 @@ export default function ProjectDetail() {
     )
   }
 
+  const hasFooter = project.year || project.toolsLabel || project.description || project.course
+
   return (
     <div className="project-page">
       <nav className="navbar">
@@ -57,15 +59,19 @@ export default function ProjectDetail() {
         ))}
       </div>
 
-      {(project.year || project.tools.length > 0 || project.description || project.course) && (
+      {hasFooter && (
         <footer className="project__footer">
-          {(project.year || project.tools.length > 0) && (
-            <div className="project__meta">
-              {project.year && <span>{project.year}</span>}
-              {project.tools.length > 0 && <span>[{project.tools.join(', ')}]</span>}
-            </div>
+          <div className="project__meta">
+            {project.year      && <span>{project.year}</span>}
+            {project.toolsLabel && <span>{project.toolsLabel}</span>}
+          </div>
+          {project.description && (
+            <p className="project__desc">
+              {project.description.split('\n').map((line, i) => (
+                <span key={i}>{line}{i < project.description.split('\n').length - 1 && <br />}</span>
+              ))}
+            </p>
           )}
-          {project.description && <p className="project__desc">{project.description}</p>}
           {project.course && <p className="project__course">{project.course}</p>}
         </footer>
       )}
