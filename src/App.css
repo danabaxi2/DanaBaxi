@@ -1,4 +1,4 @@
-/* ─── Font ───────────────────────────────────────────────────────────── */
+/* ─── Fonts ──────────────────────────────────────────────────────────── */
 @font-face {
   font-family: "ABC Diatype Mono Unlicensed Trial";
   src: url('/fonts/ABCDiatypeMono-Regular-Trial.otf') format('opentype');
@@ -21,12 +21,29 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Terminal Grotesque";
+  src: url('/fonts/terminal-grotesque.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Terminal Grotesque Open";
+  src: url('/fonts/terminal-grotesque_open.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ─── Design tokens ─────────────────────────────────────────────────── */
 :root {
-  --font-mono: "ABC Diatype Mono Unlicensed Trial", "Space Mono", monospace;
+  --font-mono:     "ABC Diatype Mono Unlicensed Trial", "Space Mono", monospace;
+  --font-terminal: "Terminal Grotesque", "Terminal Grotesque Open", monospace;
 
   --color-text:           #000000;
   --color-text-secondary: #525252;
+  --color-label:          #C4FF3B;
   --color-bg:             #ffffff;
   --color-bg-gradient:    linear-gradient(180deg,
     #ffffff  0%,
@@ -62,7 +79,6 @@ a {
 }
 
 /* ─── Navigation bar ─────────────────────────────────────────────────── */
-/* Figma: 1440×63px, padding 15px 11px 0, space-between */
 .navbar {
   position: fixed;
   top: 0;
@@ -85,7 +101,6 @@ a {
   line-height: 1;
 }
 
-/* Figma Frame 2: horizontal, gap 37px, padding 0 40px */
 .navbar__links {
   display: flex;
   align-items: center;
@@ -98,18 +113,40 @@ a {
   font-weight: 400;
 }
 
-/* ─── Main canvas ────────────────────────────────────────────────────── */
-/* Figma: 1440×866px — thumbnails positioned as % of canvas */
+/* ─── Portfolio / Scene system ───────────────────────────────────────── */
+/* 300vh gives scroll room: Scene 1 parallax (0→50%), Scene 2 (50→100%) */
+.portfolio {
+  min-height: 300vh;
+}
+
+/* Single sticky viewport that holds both scene layers */
+.scene-wrapper {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── Scene 1: Main canvas ───────────────────────────────────────────── */
 .main-canvas {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1440 / 866;
+  position: absolute;
+  inset: 0;
   background: var(--color-bg);
   overflow: hidden;
 }
 
+/* ─── Scene 2: About ─────────────────────────────────────────────────── */
+.about-scene {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
 /* ─── Background layers ──────────────────────────────────────────────── */
-/* SVG blob: rel(-199,-96) 1796×1261 on 1440×866 canvas */
 .bg-vector {
   position: absolute;
   left:   -13.82%;
@@ -121,7 +158,6 @@ a {
   z-index: 0;
 }
 
-/* Ellipse: rel(-273,16) 1074×1074 — radial gradient yellow→red→purple */
 .bg-ellipse {
   position: absolute;
   left:   -18.96%;
@@ -137,7 +173,6 @@ a {
 }
 
 /* ─── Project thumbnails ─────────────────────────────────────────────── */
-/* Positions as % of 1440×866 Figma canvas */
 .thumb {
   position: absolute;
   object-fit: cover;
@@ -145,7 +180,7 @@ a {
   z-index: 1;
 }
 
-/* Weird Fishes screenshot: rel(168,190) 405×244 */
+/* Weird Fishes banner: rel(168,190) 405×244 */
 .thumb--weird-fishes {
   left:   11.67%;
   top:    21.94%;
@@ -178,7 +213,7 @@ a {
   cursor: default;
 }
 
-/* Haven screenshot: rel(881,703) 450×321 */
+/* Haven banner: rel(881,703) 450×321 */
 .thumb--haven {
   left:   61.18%;
   top:    81.17%;
@@ -187,14 +222,16 @@ a {
 }
 
 /* ─── Project labels ─────────────────────────────────────────────────── */
+/* Figma frame drop-shadow: y=4 radius=4 rgba(0,0,0,0.25) */
 .project-label {
   position: absolute;
-  font-family: var(--font-mono);
+  font-family: var(--font-terminal);
   font-weight: 400;
-  color: var(--color-text);
+  color: var(--color-label);
   line-height: 1;
   z-index: 2;
   pointer-events: none;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 /* "Weird Fishes": rel(100,161) 48px */

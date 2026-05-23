@@ -4,6 +4,11 @@
 const BASE = 'https://res.cloudinary.com/dgkvr80cy/video/upload/f_auto,q_auto'
 
 export const media = {
+  banners: {
+    Weird_fishes_banner: `${BASE}/ovxbvd3bzxk4zf8gi6xn.mp4`,
+    Haven_banner:        `${BASE}/sm5xn5824civv0os6yol.mp4`,
+  },
+
   haven: {
     haven_loader:    `${BASE}/v1775724181/vf84nohdi6f145n91wbl.mp4`,
     haven_Welcome:   `${BASE}/jtguhbiznpviekqovs7f.mp4`,
