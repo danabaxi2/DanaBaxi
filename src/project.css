@@ -1,0 +1,81 @@
+/* ─── Project detail page ─────────────────────────────────────────────── */
+.project-page {
+  min-height: 100vh;
+  background: var(--color-bg-gradient);
+  font-family: var(--font-mono);
+  color: var(--color-text);
+}
+
+/* Figma Title area: centered, below navbar */
+.project__header {
+  padding-top: calc(var(--nav-height) + 10px);
+  text-align: center;
+  padding-bottom: 12px;
+}
+
+.project__title {
+  font-size: 65px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.project__subtitle {
+  font-size: 30px;
+  font-weight: 400;
+  margin-top: 12px;
+}
+
+/* ─── Media sections ─────────────────────────────────────────────────── */
+.project__content {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* Full-width: single item spans 100% */
+.project__section--full > * {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Half-width: two items side by side */
+.project__section--half {
+  display: flex;
+}
+
+.project__section--half > * {
+  display: block;
+  width: 50%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────── */
+.project__footer {
+  padding: 32px 15px 64px;
+  max-width: var(--canvas-width);
+  margin: 0 auto;
+}
+
+.project__meta {
+  display: flex;
+  gap: 24px;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+}
+
+.project__desc {
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 869px;
+  color: var(--color-text);
+  margin-bottom: 12px;
+}
+
+.project__course {
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 666px;
+  color: var(--color-text-secondary);
+}
