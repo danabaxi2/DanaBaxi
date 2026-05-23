@@ -80,7 +80,7 @@ a {
 }
 
 .navbar__logo {
-  font-size: 30px;
+  font-size: 25px;
   font-weight: 400;
   line-height: 1;
 }
@@ -94,7 +94,7 @@ a {
 }
 
 .navbar__links a {
-  font-size: 30px;
+  font-size: 25px;
   font-weight: 400;
 }
 
@@ -108,41 +108,102 @@ a {
   overflow: hidden;
 }
 
+/* ─── Background layers ──────────────────────────────────────────────── */
+/* SVG blob: rel(-199,-96) 1796×1261 on 1440×866 canvas */
+.bg-vector {
+  position: absolute;
+  left:   -13.82%;
+  top:    -11.08%;
+  width:  124.72%;
+  height: 145.61%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ellipse: rel(-273,16) 1074×1074 — radial gradient yellow→red→purple */
+.bg-ellipse {
+  position: absolute;
+  left:   -18.96%;
+  top:      1.85%;
+  width:   74.58%;
+  height: 124.02%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fce705 0%, #f73b18 45.7%, #d7bee6 89.9%);
+  opacity: 0.6;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* ─── Project thumbnails ─────────────────────────────────────────────── */
+/* Positions as % of 1440×866 Figma canvas */
 .thumb {
   position: absolute;
   object-fit: cover;
-}
-
-/* shark 1: x:101 y:125 w:513 h:289  (canvas 1440×866) */
-.thumb--shark {
-  left:   7.01%;
-  top:    14.43%;
-  width:  35.63%;
-  height: 33.37%;
-}
-
-/* dude1_cut 1: x:1069 y:135 w:272 h:413 */
-.thumb--dude {
-  left:   74.24%;
-  top:    15.59%;
-  width:  18.89%;
-  height: 47.69%;
-}
-
-/* haven_cut 1: x:172 y:398 w:404 h:400 */
-.thumb--haven {
-  left:   11.94%;
-  top:    45.96%;
-  width:  28.06%;
-  height: 46.19%;
   cursor: pointer;
+  z-index: 1;
 }
 
-/* phopho_bottle0000 1: x:720 y:450 w:144 h:241 */
-.thumb--phopho {
-  left:   50%;
-  top:    51.96%;
-  width:  10%;
-  height: 27.83%;
+/* Weird Fishes screenshot: rel(168,190) 405×244 */
+.thumb--weird-fishes {
+  left:   11.67%;
+  top:    21.94%;
+  width:  28.13%;
+  height: 28.17%;
 }
+
+/* No Strings Attached (dude): rel(952,155) 206×313 */
+.thumb--no-strings {
+  left:   66.11%;
+  top:    17.90%;
+  width:  14.31%;
+  height: 36.14%;
+}
+
+/* Pho Pho (bottle): rel(44,647) 192×322 */
+.thumb--phopho {
+  left:    3.06%;
+  top:    74.71%;
+  width:  13.33%;
+  height: 37.18%;
+}
+
+/* Watchout (NPC): rel(603,392) 234×322 */
+.thumb--watchout {
+  left:   41.88%;
+  top:    45.27%;
+  width:  16.25%;
+  height: 37.18%;
+  cursor: default;
+}
+
+/* Haven screenshot: rel(881,703) 450×321 */
+.thumb--haven {
+  left:   61.18%;
+  top:    81.17%;
+  width:  31.25%;
+  height: 37.07%;
+}
+
+/* ─── Project labels ─────────────────────────────────────────────────── */
+.project-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  color: var(--color-text);
+  line-height: 1;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* "Weird Fishes": rel(100,161) 48px */
+.label--weird-fishes { left: 6.94%;  top: 18.59%; font-size: clamp(20px, 3.33vw, 48px); }
+/* "No Strings Attached": rel(1077,122) 48px */
+.label--no-strings   { left: 74.79%; top: 14.09%; font-size: clamp(16px, 3.33vw, 48px); }
+/* "Watchout": rel(546,647) 40px */
+.label--watchout     { left: 37.92%; top: 74.71%; font-size: clamp(16px, 2.78vw, 40px); }
+/* "Haven": rel(1238,667) 55px */
+.label--haven        { left: 85.97%; top: 77.02%; font-size: clamp(20px, 3.82vw, 55px); }
+/* "Pho Pho": rel(168,690) 36px */
+.label--phopho       { left: 11.67%; top: 79.68%; font-size: clamp(14px, 2.5vw,  36px); }
